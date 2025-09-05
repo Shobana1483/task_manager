@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form input, form select, form button {
+            margin: 5px;
+            padding: 8px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .completed {
+            text-decoration: line-through;
+            color: green;
+        }
+        .pending {
+            color: red;
+        }
+        a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .filters button {
+            margin: 5px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .filters button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Task Manager</h1>
+
+<!-- Add Task Form with validation -->
+<form th:action="@{/tasks/add}" method="post" onsubmit="return validateTaskForm()">
+    <input type="text" id="title" name="title" placeholder="Title" required>
+    <input type="text" name="description" placeholder="Description">
+    <input type="date" name="dueDate">
+    <select name="priority">
+        <option value="">Select Priority</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+    </select>
+    <button type="submit">Add Task</button>
+</form>
+
+<!-- Filter Buttons -->
+<div class="filters">
+    <button onclick="filterTasks('all')">All</button>
+    <button onclick="filterTasks('completed')">Completed</button>
+    <button onclick="filterTasks('pending')">Pending</button>
+</div>
+
+<hr/>
+
+<!-- Task List -->
+<ul id="taskList">
+    <li th:each="task : ${tasks}"
+        th:attr="data-status=${task.completed} ? 'completed' : 'pending'">
+
+        <span th:text="${task.title}"
+              th:classappend="${task.completed} ? 'completed' : 'pending'"></span> -
+        <span th:text="${task.description}"></span> -
+        <span th:text="${task.dueDate}"></span> -
+        <span th:text="${task.priority}"></span> -
+        <span th:text="${task.completed ? '✅ Completed' : '❌ Pending'}"></span>
+
+        <!-- Complete Button -->
+        <a th:if="${!task.completed}"
+           th:href="@{/tasks/complete/{id}(id=${task.id})}">Complete</a>
+
+        <!-- Update Button -->
+        <a th:href="@{/tasks/edit/{id}(id=${task.id})}">Edit</a>
+
+        <!-- Delete Button -->
+        <a th:href="@{/tasks/delete/{id}(id=${task.id})}">Delete</a>
+    </li>
+</ul>
+
+<script>
+    // Basic form validation
+    function validateTaskForm() {
+        const title = document.getElementById("title").value.trim();
+        if (!title) {
+            alert("Task title cannot be empty!");
+            return false;
+        }
+        return true;
+    }
+
+    // Filter tasks by status
+    function filterTasks(filter) {
+        const tasks = document.querySelectorAll("#taskList li");
+        tasks.forEach(task => {
+            const status = task.getAttribute("data-status");
+            if (filter === "all") {
+                task.style.display = "block";
+            } else if (filter === "completed" && status === "completed") {
+                task.style.display = "block";
+            } else if (filter === "pending" && status === "pending") {
+                task.style.display = "block";
+            } else {
+                task.style.display = "none";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

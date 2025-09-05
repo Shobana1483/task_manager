@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        form input, form select, form button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Edit Task</h1>
+
+<form th:action="@{/tasks/update/{id}(id=${task.id})}" method="post" onsubmit="return validateEditForm()">
+    <input type="text" id="title" name="title" th:value="${task.title}" required>
+    <input type="text" name="description" th:value="${task.description}">
+    <input type="date" name="dueDate" th:value="${task.dueDate}">
+
+    <select name="priority">
+        <option value="LOW" th:selected="${task.priority == 'LOW'}">Low</option>
+        <option value="MEDIUM" th:selected="${task.priority == 'MEDIUM'}">Medium</option>
+        <option value="HIGH" th:selected="${task.priority == 'HIGH'}">High</option>
+    </select>
+
+    <button type="submit">Update Task</button>
+</form>
+
+<a th:href="@{/tasks}">Back to Task List</a>
+
+<script>
+    function validateEditForm() {
+        const title = document.getElementById("title").value.trim();
+        if (!title) {
+            alert("Task title cannot be empty!");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</body>
+</html>
